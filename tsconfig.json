@@ -19,18 +19,15 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "outDir": "./dist",
-    "typeRoots": [
-      "./src/types"
-    ],
+    "outDir": "./",
     "types": [
       "@types/jest"
     ]
   },
   "include": [
-    "src"
+    "./src/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "./node_modules/**/*"
   ]
 }

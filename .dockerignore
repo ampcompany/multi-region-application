@@ -188,3 +188,14 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+### Custom
+.git
+.gitignore
+.idea
+*.md
+Dockerfile
+.dockerignore
+LICENSE
+./src/logs
+./src/test
