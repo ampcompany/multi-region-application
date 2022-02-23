@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon --watch \"./src/**/*.ts\" --exec \"./node_modules/.bin/ts-node\" ./src/app.ts",
     "prod": "ts-node ./src/app.ts",
-    "test": "jest --forceExit --ci --reporters=default --reporters=jest-junit"
+    "test": "jest --forceExit --ci --coverage --reporters=default --reporters=jest-junit"
   },
   "repository": {
     "type": "git",

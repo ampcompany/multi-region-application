@@ -1,0 +1,33 @@
+version: 0.2
+
+run-as: root
+
+env:
+  shell: bash
+  variables:
+    NODE_ENV: "test"
+    EXPRESS_PORT: 5000
+    EXPRESS_DATABASE_USERNAME: test
+    EXPRESS_DATABASE_PASSWORD: test
+    EXPRESS_DATABASE_DATABASE: test
+    EXPRESS_DATABASE_HOST: localhost
+    EXPRESS_EATABASE_PORT: 5432
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+    commands:
+      - docker pull public.ecr.aws/docker/library/postgres:13.6-alpine
+      - docker start -p 5432:5432 -e POSTGRES_USER=test -e POSTGRES_DB=test -e POSTGRES_PASSWORD=test --name postgres postgres:13.6-alpine
+      - npm install
+
+  pre_build:
+    commands:
+      - npm test
+
+  build:
+    commands:
+      - VERSION=$(sed 's/.*"version": "\(.*\)".*/\1/;t;d' ./package.json)
+      - docker build . -t multi-region-application:latest
+      - docker build . -t multi-region-application:$VERSION

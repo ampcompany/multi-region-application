@@ -197,5 +197,6 @@ dist
 Dockerfile
 .dockerignore
 LICENSE
-./src/logs
-./src/test
+src/logs
+src/test
+junit.xml
