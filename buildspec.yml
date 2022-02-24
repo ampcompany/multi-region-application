@@ -18,8 +18,9 @@ phases:
     runtime-versions:
       nodejs: 12
     commands:
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - docker pull public.ecr.aws/docker/library/postgres:13.6-alpine
-      - docker start -p 5432:5432 -e POSTGRES_USER=test -e POSTGRES_DB=test -e POSTGRES_PASSWORD=test --name postgres postgres:13.6-alpine
+      - docker start -p 5432:5432 -e POSTGRES_USER=test -e POSTGRES_DB=test -e POSTGRES_PASSWORD=test --name postgres public.ecr.aws/docker/library/postgres:13.6-alpine
       - npm install
 
   pre_build:
@@ -29,5 +30,22 @@ phases:
   build:
     commands:
       - VERSION=$(sed 's/.*"version": "\(.*\)".*/\1/;t;d' ./package.json)
-      - docker build . -t multi-region-application:latest
-      - docker build . -t multi-region-application:$VERSION
+      - docker build . -t $IMAGE_REPO_NAME:$VERSION
+      - docker tag $IMAGE_REPO_NAME:$VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$VERSION
+      - docker tag $IMAGE_REPO_NAME:$VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+
+  post_build:
+    commands:
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$VERSION
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:latest
+
+reports:
+  multi-region-application-test:
+    files:
+      - ./junit.xml
+    file-format: JUNITXML
+
+  multi-region-application-coverage:
+    files:
+      - ./coverage/clover.xml
+    file-format: CLOVERXML
